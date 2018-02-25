@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2018-02-25 14:30:21">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="Global">global</application>
+<application_name>Global</application_name>
+<application_scope>global</application_scope>
+<application_version/>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description/>
+<inserted/>
+<name>DepNowApplication_patch_v1.9.1</name>
+<origin_sys_id/>
+<release_date/>
+<remote_sys_id>45eba030db201300a74f76efbf96197d</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-02-25 14:30:21</sys_created_on>
+<sys_id>ccef9ab4db201300a74f76efbf961931</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2018-02-25 14:30:21</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_ui_script_fa5654ffdb001300a74f76efbf961999</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_ui_script"&gt;&lt;sys_ui_script action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;description/&gt;&lt;global&gt;false&lt;/global&gt;&lt;name&gt;depNow_getRunBook&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function getUpdateSet(){
+	var nameContain = $("#nameContain").val();
+	var beforedate = $("#dateRangePicker").data('datepicker').getFormattedDate('yyyy-mm-dd');
+	var afterdate= $("#dateRangePicker1").data('datepicker').getFormattedDate('yyyy-mm-dd');
+	var optionSearch = $("#selectOption").val();
+	var remoteHost = $("#selectRemote").val();
+	var queryString = '';
+
+	if(optionSearch == "name_contain"){
+		if(remoteHost == ''){
+			$('#modalAlert').show();
+			$("#modalTitle").text("Warning !!");
+			$("#modalText").text("Please Select Remote Instance");
+			return false ;
+		}
+		if(nameContain == ''){
+			$('#modalAlert').show();
+			$("#modalTitle").text("Warning !!");
+			$("#modalText").text("Please enter name to find update set.");
+			return false ;
+		} else {
+			document.getElementById("deploy").disabled = true;
+			if(nameContain.split('\n').length &gt;= 50){
+				$('#modalAlert').show();
+				$("#modalTitle").text("Warning !!");
+				$("#modalText").text("Hi There ! \n Sorry,We can not process more than 50 record.\n Plaese split your records.");
+				return false ;
+			}
+			var nameIsOneOf = nameContain.replace(/\n/g,"_._");
+			nameIsOneOf = nameIsOneOf.split(' ').join('__..');
+			queryString =optionSearch+"___"+afterdate+"___"+beforedate+"___"+nameIsOneOf ;
+			getUSFromInstance(queryString,remoteHost);
+		}
+	} else if(optionSearch == "date_range"){
+		if(remoteHost == ''){
+			$('#modalAlert').show();
+			$("#modalTitle").text("Warning !!");
+			$("#modalText").text("Please Select Remote Instance");
+			return false ;
+		}
+		if(beforedate == '' || afterdate == ''){
+			$('#modalAlert').show();
+			$("#modalTitle").text("Warning !!");
+			$("#modalText").text("Please select date range.");
+			return false ;
+		} else {
+			document.getElementById("deploy").disabled = true;
+			queryString = queryString =optionSearch+"___"+afterdate+"___"+beforedate+"___"+nameContain ;
+			getUSFromInstance(queryString,remoteHost);
+		}
+
+	} else if(optionSearch == "excel_upload"){
+		checkUpdateSetFromDatabase();
+	}
+}
+
+
+function getUSFromInstance(queryString,remoteHost) {
+	$("#runbook").hide();
+	$("#runbookClicked").show();
+
+	var obj = new GlideAjax('depNow_getUSDetails');
+	obj.addParam('sysparm_name','getRunbookDetails');
+	obj.addParam('sysparm_query',queryString);
+	obj.addParam('sysparm_sourceURI',remoteHost);
+	obj.getXML(getRunbook);
+	function getRunbook(response) {
+		var answer = response.responseXML.documentElement.getAttribute("answer");
+		try{
+			getRunBook.myFunc(answer);
+			$("#runbook").show();
+			$("#runbookClicked").hide();
+			$("#usCount").text(JSON.parse(answer).result.length);
+		} catch(e){
+			$('#modalAlert').show();
+			$("#modalTitle").text("Error !!");
+			$("#modalText").text(JSON.stringify(answer));
+		}
+	}
+}
+
+
+function checkUpdateSetFromDatabase(){
+	alert("coming soon");
+	return false;
+	var obj = new GlideAjax('depNow_getUSDetails');
+	obj.addParam('sysparm_sourceurl',$("#selectRemote option:selected").text());
+	obj.addParam('sysparm_name','getRunbookDetails');
+	obj.addParam('sysparm_query',queryString);
+	obj.getXML(getRunbook);
+	function getRunbook(response) {
+		var answer = response.responseXML.documentElement.getAttribute("answer");
+		answer = JSON.parse(answer);
+		getRunBook.myFunc(updateSet);
+		$("#target").text(window.location.origin) ;
+		$("#source").text($("#selectRemote option:selected").text()) ;
+
+	}
+}
+
+function checkUpdateSet(){
+
+}]]&gt;&lt;/script&gt;&lt;script_name/&gt;&lt;sys_class_name&gt;sys_ui_script&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2018-02-09 15:39:53&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;fa5654ffdb001300a74f76efbf961999&lt;/sys_id&gt;&lt;sys_mod_count&gt;54&lt;/sys_mod_count&gt;&lt;sys_name&gt;depNow_getRunBook&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_ui_script_fa5654ffdb001300a74f76efbf961999&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-02-25 06:10:15&lt;/sys_updated_on&gt;&lt;use_scoped_format&gt;false&lt;/use_scoped_format&gt;&lt;/sys_ui_script&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="DepNowApplication_patch_v1.9.1">ccef9ab4db201300a74f76efbf961931</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-02-25 14:30:21</sys_created_on>
+<sys_id>04ef9ab4db201300a74f76efbf961932</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2018-02-25 14:30:21</sys_updated_on>
+<table/>
+<target_name>depNow_getRunBook</target_name>
+<type>UI Script</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_ui_page_fe4218bfdb001300a74f76efbf961912</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_ui_page"&gt;&lt;sys_ui_page action="INSERT_OR_UPDATE"&gt;&lt;category&gt;homepages&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[var getRunBook = '';
+var commitUS = '';
+var updateSetRecord = '';
+angular.module('depApp', [])
+	.controller('mainController', function($scope) {
+
+	$scope.sortType     = 'usName'; // set the default sort type
+	$scope.sortReverse  = false;
+	
+	getRunBook = this;
+	getRunBook.myFunc = function(jsonArr1){
+		$scope.$apply(function(){
+			$scope.updateSet = JSON.parse(jsonArr1).result;
+			updateSetRecord = $scope.updateSet;
+
+		});
+	};
+	commitUS = this;
+	commitUS.myFunction = function(jsonArr){
+		$scope.$apply(function(){
+			$scope.commitUpdateSet = jsonArr;
+		});
+	};
+
+	$scope.Sequencesort = function(){
+
+		$scope.sortType     = 'usSeq';
+		$scope.sortReverse  = false;  // set the default sort order
+	};
+
+	$scope.removeRow = function(name){
+		var index = -1;
+		var comArr = eval( $scope.updateSet );
+		for( var i = 0; i &lt; comArr.length; i++ ) {
+			if( comArr[i].usName === name ) {
+				index = i;
+				break;
+			}
+		}
+		if( index === -1 ) {
+			alert( "Something gone wrong" );
+		}
+		$scope.updateSet.splice( index, 1 );
+		updateSetRecord = $scope.updateSet;
+	};
+});]]&gt;&lt;/client_script&gt;&lt;description/&gt;&lt;direct&gt;false&lt;/direct&gt;&lt;endpoint/&gt;&lt;html&gt;&lt;![CDATA[&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null"&gt;
+	&lt;g:include_script src=" depNow_JQuery.jsdbx"/&gt;
+	&lt;g:include_script src="depNow_util.jsdbx"/&gt;
+	&lt;g:include_script src="depNow_getRunBook.jsdbx"/&gt;
+	&lt;g:include_script src="depNow_retieveUS.jsdbx"/&gt; 
+	&lt;g:include_script src="depNow_startDeployment.jsdbx"/&gt;
+	&lt;g:evaluate&gt;
+		var options = [];
+		var gr =  new GlideRecord('sys_update_set_source');
+		gr.addActiveQuery();
+		gr.query( );
+		while (gr.next()) { 
+		options.push({
+		'name': gr.name+'',
+		'sys_id' : gr.sys_id+'',
+		'RemoteURL' : gr.url+''
+		});
+		}
+	&lt;/g:evaluate&gt;
+
+	&lt;title&gt;Shashi Ranjan&lt;/title&gt;
+	&lt;link type="text/css" rel="stylesheet" href="191377b3db041300a74f76efbf961974.cssdbx" /&gt;
+	&lt;link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" /&gt;
+	&lt;link href="https://protostrap.com/Assets/gv/css/gv.bootstrap-form.css" rel="stylesheet" type="text/css" /&gt;
+	&lt;link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css"&gt;&lt;/link&gt;
+	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/&gt;
+
+	&lt;link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" /&gt; 
+	&lt;script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"&gt;&lt;/script&gt;
+
+	&lt;script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"&gt;&lt;/script&gt;
+
+	&lt;style&gt;
+
+		.skip{
+		background-color : yellow;
+		}
+		.previewed{
+		background-color :red;
+		}
+		.commited {
+		background-color : green;
+		}
+
+
+	&lt;/style&gt;
+
+	&lt;div id="modalAlert" class="modal"&gt;
+		&lt;div class="modal-content"&gt;
+			&lt;div class="modal-header"&gt;
+				&lt;h4 class="modal-title" id = "modalTitle"&gt;Modal Header&lt;/h4&gt;
+			&lt;/div&gt;
+			&lt;div class="modal-body"&gt;
+				&lt;p id = "modalText"&gt;Some text in the modal.&lt;/p&gt;
+			&lt;/div&gt;
+			&lt;div class="modal-footer"&gt;
+				&lt;button type="button" class="btn btn-default" onclick = "closeModel()"&gt;Close&lt;/button&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;nav class="navbar navbar-default"&gt;
+		&lt;div class="container-fluid"&gt;
+			&lt;div class="navbar-header"&gt;
+				&lt;div class="nav navbar-nav" style="margin-left: 30px;;"&gt;&lt;h3 &gt;DeployNow&lt;/h3&gt;&lt;/div&gt;
+			&lt;/div&gt;
+			&lt;div class="navbar-header"&gt;
+				&lt;div class="nav navbar-nav" style="margin-left: 10px;margin-top: 15PX;"&gt;&lt;h4 &gt;v1.9.1&lt;/h4&gt;&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/nav&gt;
+	&lt;div class="container-fluid" ng-app="depApp" ng-controller="mainController" &gt;
+
+		&lt;!-- The Modal for angular JS --&gt;
+		&lt;div id="modalAlertAng" class="modal"&gt;
+			&lt;div class="modal-content"&gt;
+				&lt;div class="modal-header"&gt;
+					&lt;h4 class="modal-title" id = ""&gt;Update Set&lt;/h4&gt;
+				&lt;/div&gt;
+				&lt;div class="modal-body"&gt;
+					&lt;!-- class="container" --&gt;
+					&lt;div &gt;
+						&lt;div class="alert alert-info"&gt;
+							Prepare RunBook..
+						&lt;/div&gt;
+
+						&lt;form&gt;
+							&lt;div class="form-group"&gt;
+								&lt;div class="input-group"&gt;
+									&lt;div class="input-group-addon"&gt;&lt;i class="fa fa-search"&gt;&lt;/i&gt;&lt;/div&gt;
+									&lt;input type="text" class="form-control" placeholder="Search Update Set" ng-model="searchUS"&gt;&lt;/input&gt;
+								&lt;/div&gt;      
+							&lt;/div&gt;
+						&lt;/form&gt;
+						&lt;table class="table table-bordered table-striped"&gt; 
+							&lt;thead&gt;
+								&lt;tr&gt;
+									&lt;td&gt;
+										&lt;a href="#" ng-click="sortType = 'usName'; sortReverse = !sortReverse"&gt;
+											UpdateSet Name 
+											&lt;span ng-show="sortType == 'usName' &amp;amp;&amp;amp; !sortReverse" class="glyphicon glyphicon-arrow-down"&gt;&lt;/span&gt;
+											&lt;span ng-show="sortType == 'usName' &amp;amp;&amp;amp; sortReverse" class="glyphicon glyphicon-arrow-up"&gt;&lt;/span&gt;
+										&lt;/a&gt;
+									&lt;/td&gt;
+									&lt;td&gt;
+										&lt;a href="#" ng-click="sortType = 'usCustCount'; sortReverse = !sortReverse"&gt;
+											Local Update
+											&lt;span ng-show="sortType == 'usCustCount' &amp;amp;&amp;amp; !sortReverse" class="glyphicon glyphicon-arrow-down"&gt;&lt;/span&gt;
+											&lt;span ng-show="sortType == 'usCustCount' &amp;amp;&amp;amp; sortReverse" class="glyphicon glyphicon-arrow-up"&gt;&lt;/span&gt;
+										&lt;/a&gt;
+									&lt;/td&gt;
+									&lt;td&gt;
+										&lt;a href="#" ng-click="sortType = 'usSeq'; sortReverse = !sortReverse"&gt;
+											Sequence 
+											&lt;span ng-show="sortType == 'usSeq' &amp;amp;&amp;amp; !sortReverse" class="glyphicon glyphicon-arrow-down"&gt;&lt;/span&gt;
+											&lt;span ng-show="sortType == 'usSeq' &amp;amp;&amp;amp; sortReverse" class="glyphicon glyphicon-arrow-up"&gt;&lt;/span&gt;
+										&lt;/a&gt;
+									&lt;/td&gt;
+									&lt;td&gt;
+										Select
+									&lt;/td&gt;
+									&lt;td&gt;
+										Sys ID
+									&lt;/td&gt;
+								&lt;/tr&gt;
+							&lt;/thead&gt;
+							&lt;tbody&gt;
+								&lt;tr ng-repeat="us in updateSet | orderBy:sortType:sortReverse | filter: searchUS"&gt;
+									&lt;td&gt;{{ us.usName }}&lt;/td&gt;
+									&lt;td&gt;{{ us.usCustCount}}&lt;/td&gt;
+									&lt;!--  --&gt;
+									&lt;td&gt;&lt;a href="#" ng-click = "seqNum = us.usSeq;showSequenceEdit = true" ng-show="!showSequenceEdit"&gt;{{ us.usSeq || 'empty' }}&lt;/a&gt;
+										&lt;div ng-show="showSequenceEdit"&gt;
+											&lt;input type = 'number' ng-model="seqNum"&gt;&lt;/input&gt;
+											&lt;button ng-click="us.usSeq = seqNum;showSequenceEdit = false"&gt;&lt;span class = "glyphicon glyphicon-ok"&gt;&lt;/span&gt;&lt;/button&gt;
+											&lt;button ng-click="showSequenceEdit = false"&gt;&lt;span class = "glyphicon glyphicon-remove"&gt;&lt;/span&gt;&lt;/button&gt;
+										&lt;/div&gt;&lt;/td&gt;
+									&lt;td&gt;&lt;input type="button" value="Remove" class="btn btn-link" ng-click="removeRow(us.usName)"/&gt;
+									&lt;/td&gt;
+									&lt;td&gt;{{us.usSysID}}&lt;/td&gt;
+								&lt;/tr&gt;
+							&lt;/tbody&gt;
+						&lt;/table&gt;
+						&lt;div class="modal-footer"&gt;
+							&lt;button type="button" class="btn btn-primary" ng-click="Sequencesort()" onclick = "closeModelAng()"&gt;Lock Run-Book&lt;/button&gt;
+						&lt;/div&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;					
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;div class="row"&gt;
+			&lt;form action="" id="formentry" class="form-horizontal" role="form"&gt;
+				&lt;div class="container-fluid shadow"&gt;
+					&lt;div class="row"&gt;
+
+						&lt;div class="col-md-12"&gt;
+							&lt;div class="row"&gt;
+								&lt;div class="col-md-6"&gt;
+									&lt;div id="panel125" class="panel panel-default" data-role="panel"&gt;
+										&lt;div class="panel-heading"&gt;Update Set Parameter&lt;/div&gt;
+										&lt;div class="panel-body"&gt;
+											&lt;div class="form-group"&gt;
+												&lt;label class="control-label-left" &gt;Select Option&lt;/label&gt;
+												&lt;div class="controls"&gt;
+													&lt;select id="selectOption" class="form-control" ng-change = "searchOption = option" ng-model = "option"&gt;
+														&lt;option value="false"&gt;--Select--&lt;/option&gt;
+														&lt;option value="name_contain"&gt;Name is One Of&lt;/option&gt;
+														&lt;option value="date_range"&gt;Date Range&lt;/option&gt;
+														&lt;option value="excel_upload"&gt;Run-Book Upload&lt;/option&gt;
+													&lt;/select&gt;
+												&lt;/div&gt;
+											&lt;/div&gt;
+											&lt;div class="row"&gt;
+												&lt;div class="col-md-12" ng-show = "option"&gt;
+													&lt;div class="form-group"&gt;
+														&lt;label class="control-label-left" &gt;Remote Host&lt;/label&gt;
+														&lt;div class="controls"&gt;
+															&lt;select id="selectRemote" class="form-control" data-role="select" data-parsley-errors-container="#errId1"&gt;
+																&lt;option value=""&gt;--Select--&lt;/option&gt;
+																&lt;j:forEach items="${options}" var="jvar_option"&gt;  
+																	&lt;g:evaluate jelly="true"&gt;  
+																		var name = jelly.jvar_option.name;  
+																		var value = jelly.jvar_option.RemoteURL;
+																		var sysID = jelly.jvar_option.sys_id;
+																	&lt;/g:evaluate&gt;  
+																	&lt;option value="${value}"&gt;${name}&lt;/option&gt;
+																&lt;/j:forEach&gt;
+															&lt;/select&gt;
+														&lt;/div&gt;
+													&lt;/div&gt;
+												&lt;/div&gt;
+												&lt;div class="col-md-12" ng-show = "searchOption == 'name_contain'"&gt;
+													&lt;div class="form-group"&gt;
+														&lt;label for="usr"&gt;Name:&lt;/label&gt;
+														&lt;!-- &lt;input type="text" class="form-control" id="nameContain"&gt;&lt;/input&gt; --&gt;
+														&lt;textarea class="form-control" rows="6" id="nameContain"&gt;&lt;/textarea&gt;
+													&lt;/div&gt;
+												&lt;/div&gt;
+												&lt;div class="col-md-12" ng-show = "searchOption == 'date_range'"&gt;
+													&lt;div class="form-group"&gt;
+														&lt;label&gt;Select Date :&lt;/label&gt;
+														&lt;div class='input-group date' id='dateRangePicker1' style="z-index: 0;"&gt;
+															&lt;input type='text' placeholder="Created After" class="form-control" name="release_date"/&gt;
+															&lt;span class="input-group-addon"&gt;
+																&lt;span class="glyphicon glyphicon-calendar"&gt;&lt;/span&gt;
+															&lt;/span&gt;
+														&lt;/div&gt;
+														&lt;label&gt;Select Date :&lt;/label&gt;
+														&lt;div class='input-group date' id='dateRangePicker' style="z-index: 0;"&gt;
+															&lt;input type='text' placeholder="Created Before" class="form-control" name="created_after_date" /&gt;
+															&lt;span class="input-group-addon"&gt;
+																&lt;span class="glyphicon glyphicon-calendar"&gt;&lt;/span&gt;
+															&lt;/span&gt;
+														&lt;/div&gt;
+													&lt;/div&gt;
+												&lt;/div&gt;	
+												&lt;div class="col-md-12" ng-show = "searchOption == 'excel_upload'"&gt;
+													&lt;button id="button6" type="button" class="btn btn-primary" style = "margin-right:5px" onclick="checkUpdateSetFromDatabase()"&gt;Upload Excel&lt;/button&gt; 
+													&lt;button id="button6" type="button" class="btn btn-primary" style = "margin-right:5px" onclick="checkUpdateSetFromDatabase()"&gt;Template&lt;/button&gt; 
+												&lt;/div&gt;	 
+												&lt;div class="col-md-12" ng-show="option"&gt;
+													&lt;div class="form-group group-inline pull-right"&gt;
+														&lt;button id="retrieve" type="button" class="btn btn-primary btn-lg" style = "margin-right:5px" onclick="retrieveCompletedRemoteSets('${sysID}')"&gt;RetrieveUS&lt;/button&gt; 
+														&lt;button id="retrieveClicked" class = "btn btn-primary btn-lg disabled" style = "margin-right:5px; display:none" &gt;Retrieving.. &lt;i class="fa fa-circle-o-notch fa-spin"&gt;&lt;/i&gt;&lt;/button&gt;
+														&lt;button id="runbook" type="button" class="btn btn-primary btn-lg" style = "margin-right:5px" onclick="getUpdateSet()"&gt;PrepareRunbook &lt;/button&gt; 
+														&lt;button id="runbookClicked" class = "btn btn-primary btn-lg disabled" style = "margin-right:5px; display:none" &gt;Fetching.. &lt;i class="fa fa-circle-o-notch fa-spin"&gt;&lt;/i&gt;&lt;/button&gt;
+														&lt;button id="deploy" type="button" class="btn btn-primary btn-lg" onclick = "kisckOff()"&gt;StartDeployment&lt;/button&gt; 
+														&lt;button id="deployClicked" class = "btn btn-primary btn-lg disabled" style = "margin-right:5px; display:none" &gt;Deploying.. &lt;i class="fa fa-circle-o-notch fa-spin"&gt;&lt;/i&gt;&lt;/button&gt;
+													&lt;/div&gt;
+												&lt;/div&gt;	
+											&lt;/div&gt;
+										&lt;/div&gt;
+									&lt;/div&gt;
+									&lt;div class="row"&gt;
+										&lt;div class="col-md-12"&gt;
+
+										&lt;/div&gt;
+									&lt;/div&gt;
+								&lt;/div&gt;
+								&lt;div class="col-md-6"&gt;
+									&lt;div id="panel127" class="panel panel-default" data-role="panel"&gt;
+										&lt;div class="panel-heading"&gt;Prepared Runbook&lt;/div&gt;
+										&lt;div class="panel-body"&gt;
+
+											&lt;div class="col-md-12"&gt;
+												&lt;a href="#" onclick="getDetailsUpdate();"&gt;UpdateSet Found .&lt;span class="badge" id = 'usCount'&gt;0&lt;/span&gt;&lt;/a&gt;
+											&lt;/div&gt;
+											&lt;div class="col-md-12"&gt;
+												&lt;div class="row"&gt;
+													&lt;div class="panel-heading"&gt;
+														&lt;h4&gt;
+															Selected Update Set (Run-Book) 
+														&lt;/h4&gt;
+													&lt;/div&gt;
+
+													&lt;table class="table table-fixed" style = "table-layout: fixed ; word-wrap: break-word" &gt;
+														&lt;thead&gt;
+															&lt;tr&gt;
+																&lt;th class="col-xs-2"&gt;#&lt;/th&gt;&lt;th class="col-xs-8"&gt;Name&lt;/th&gt;&lt;th class="col-xs-2"&gt;&lt;a href="#" ng-click="sortType = 'usSeq'; sortReverse = !sortReverse"&gt;
+																#Seq 
+																&lt;span ng-show="sortType == 'usSeq' &amp;amp;&amp;amp; !sortReverse" class="glyphicon glyphicon-arrow-down"&gt;&lt;/span&gt;
+																&lt;span ng-show="sortType == 'usSeq' &amp;amp;&amp;amp; sortReverse" class="glyphicon glyphicon-arrow-up"&gt;&lt;/span&gt;
+																&lt;/a&gt;&lt;/th&gt;
+															&lt;/tr&gt;
+														&lt;/thead&gt;
+													&lt;/table&gt;
+													&lt;div style="overflow:scroll;overflow:auto;height:221px;width:100%; display:none" id = "selectedUS"&gt;
+														&lt;table class="table table-fixed" style = "table-layout: fixed ; word-wrap: break-word" &gt;
+															&lt;tbody &gt;
+																&lt;tr ng-repeat = "record in updateSet | orderBy:sortType:sortReverse"&gt;
+																	&lt;td class="col-xs-2"&gt;{{$index}}&lt;/td&gt;&lt;td class="col-xs-8"&gt;{{record.usName}}&lt;/td&gt;&lt;td class="col-xs-2"&gt;{{record.usSeq}}&lt;/td&gt;
+																&lt;/tr&gt;
+															&lt;/tbody&gt;
+														&lt;/table&gt;
+													&lt;/div&gt;
+
+												&lt;/div&gt;
+											&lt;/div&gt;
+										&lt;/div&gt;
+									&lt;/div&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+							&lt;div class="row"&gt;
+								&lt;div class="col-md-12"&gt;
+									&lt;div id="panel126" class="panel panel-default" data-role="panel"&gt;
+										&lt;div class="panel-heading"&gt;Report&lt;/div&gt;
+										&lt;div class="panel-body"&gt;
+											&lt;div class="col-md-12"&gt;
+												&lt;table class="table" style = "table-layout: fixed ;" id = "reportTable"&gt;
+													&lt;thead&gt;
+														&lt;tr&gt;
+															&lt;th&gt;#&lt;/th&gt;
+															&lt;th&gt;Name&lt;/th&gt;
+															&lt;th&gt;Status&lt;/th&gt;
+															&lt;th&gt;Report&lt;/th&gt;
+														&lt;/tr&gt;
+													&lt;/thead&gt;
+													&lt;tbody&gt;
+														&lt;tr ng-repeat = "commitRecord in commitUpdateSet track by $index"&gt;
+															&lt;td class="col-xs-2"&gt;{{$index}}&lt;/td&gt;
+															&lt;td class="col-xs-8" &gt;{{commitRecord.name}}&lt;/td&gt;
+															&lt;td  class="col-xs-2" ng-class = "{skip : (commitRecord.result == 'Already Commited,skipped'),previewed : (commitRecord.result == 'previewed'),commited : (commitRecord.result == 'commited')}" &gt;{{commitRecord.result}}&lt;/td&gt;
+															&lt;td class="col-xs-2"&gt;&lt;a href = "{{commitRecord.report}}" target="_blank"&gt;Report&lt;/a&gt;&lt;/td&gt;
+														&lt;/tr&gt;
+													&lt;/tbody&gt;
+												&lt;/table&gt;
+											&lt;/div&gt;
+										&lt;/div&gt;
+									&lt;/div&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+
+						&lt;/div&gt;
+
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/form&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+
+
+	&lt;script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js" &gt;&lt;/script&gt;	
+	&lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"&gt;&lt;/script&gt;
+
+
+
+
+
+&lt;/j:jelly&gt;]]&gt;&lt;/html&gt;&lt;name&gt;depNow_landing_page&lt;/name&gt;&lt;processing_script/&gt;&lt;sys_class_name&gt;sys_ui_page&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2018-02-09 15:23:02&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;fe4218bfdb001300a74f76efbf961912&lt;/sys_id&gt;&lt;sys_mod_count&gt;261&lt;/sys_mod_count&gt;&lt;sys_name&gt;depNow_landing_page&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_ui_page_fe4218bfdb001300a74f76efbf961912&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-02-25 07:16:26&lt;/sys_updated_on&gt;&lt;/sys_ui_page&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="DepNowApplication_patch_v1.9.1">ccef9ab4db201300a74f76efbf961931</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-02-25 14:30:21</sys_created_on>
+<sys_id>40ef9ab4db201300a74f76efbf961932</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2018-02-25 14:30:21</sys_updated_on>
+<table/>
+<target_name>depNow_landing_page</target_name>
+<type>UI Page</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_ws_operation_e1ec8a08db941300a74f76efbf9619ee</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_ws_operation"&gt;&lt;sys_ws_operation action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;consumes&gt;application/json,application/xml,text/xml&lt;/consumes&gt;&lt;consumes_customized&gt;false&lt;/consumes_customized&gt;&lt;default_operation_uri/&gt;&lt;enforce_acl/&gt;&lt;http_method&gt;GET&lt;/http_method&gt;&lt;name&gt;Fetch UpdateSet&lt;/name&gt;&lt;operation_script&gt;&lt;![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+	var getAllUpdateSet = '';
+	var CustomerUS = '';
+	var CUScount = '';
+	var responseAPI = [];
+	var detailsUS = {};
+	var queryString = "";
+	var query = request.queryString;
+	query = query.substring(12);
+	var queryArr = query.split("___");
+	if(queryArr[0]=="name_contain"){
+		var nameIsOneOf = queryArr[3].replace(/_._/g,',');
+		nameIsOneOf = nameIsOneOf.split('__..').join(' ');
+		nameIsOneOf = nameIsOneOf.split(',');
+		for(var j = 0;j&lt;nameIsOneOf.length;j++){
+			getAllUpdateSet = new GlideRecord("sys_update_set");   
+			queryString = "state=complete^name="+nameIsOneOf[j];
+			getAllUpdateSet.addEncodedQuery(queryString);
+			getAllUpdateSet.query();
+			if(getAllUpdateSet.next()){	
+				CustomerUS = new GlideAggregate("sys_update_xml");
+				CustomerUS.addQuery('update_set',getAllUpdateSet.sys_id);
+				CustomerUS.addAggregate('COUNT');
+				CustomerUS.query();
+				CustomerUS.next();
+				CUScount=CustomerUS.getAggregate('COUNT');
+				detailsUS = {
+					usName : getAllUpdateSet.getValue("name"),
+					usSysID : getAllUpdateSet.sys_id+"",
+					usCustCount : CUScount,
+					usSeq : j+1,
+					usPause : false
+				};
+				responseAPI.push(detailsUS);
+			}
+		}
+
+
+	}else if(queryArr[0] == "date_range"){
+		queryString = "state=complete^sys_created_onBETWEENjavascript:gs.dateGenerate('"+queryArr[1]+"','00:00:00')@javascript:gs.dateGenerate('"+queryArr[2]+"','23:59:59')";
+
+		getAllUpdateSet = new GlideRecord("sys_update_set");
+		getAllUpdateSet.addEncodedQuery(queryString);
+		getAllUpdateSet.query();
+		var i = 1;
+		while(getAllUpdateSet.next()){	
+			CustomerUS = new GlideAggregate("sys_update_xml");
+			CustomerUS.addQuery('update_set',getAllUpdateSet.sys_id);
+			CustomerUS.addAggregate('COUNT');
+			CustomerUS.query();
+			CustomerUS.next();
+			CUScount=CustomerUS.getAggregate('COUNT');
+			detailsUS = {
+				usName : getAllUpdateSet.getValue("name"),
+				usSysID : getAllUpdateSet.sys_id+"",
+				usCustCount : CUScount,
+				usSeq : i,
+				usPause : false
+			};
+			responseAPI.push(detailsUS);
+			++i;
+		}
+	} else {
+
+	}
+	return responseAPI;
+
+})(request, response);]]&gt;&lt;/operation_script&gt;&lt;operation_uri&gt;/api/135654/depnow_sourceapi/fetchUpdateSet&lt;/operation_uri&gt;&lt;produces&gt;application/json,application/xml,text/xml&lt;/produces&gt;&lt;produces_customized&gt;false&lt;/produces_customized&gt;&lt;relative_path&gt;/fetchUpdateSet&lt;/relative_path&gt;&lt;request_example/&gt;&lt;requires_acl_authorization&gt;false&lt;/requires_acl_authorization&gt;&lt;requires_authentication&gt;true&lt;/requires_authentication&gt;&lt;short_description/&gt;&lt;sys_class_name&gt;sys_ws_operation&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2018-02-10 18:58:23&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;e1ec8a08db941300a74f76efbf9619ee&lt;/sys_id&gt;&lt;sys_mod_count&gt;9&lt;/sys_mod_count&gt;&lt;sys_name&gt;Fetch UpdateSet&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_ws_operation_e1ec8a08db941300a74f76efbf9619ee&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-02-25 06:18:23&lt;/sys_updated_on&gt;&lt;web_service_definition display_value="depNow_sourceAPI"&gt;bdbc8a08db941300a74f76efbf961900&lt;/web_service_definition&gt;&lt;web_service_version/&gt;&lt;/sys_ws_operation&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="DepNowApplication_patch_v1.9.1">ccef9ab4db201300a74f76efbf961931</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-02-25 14:30:21</sys_created_on>
+<sys_id>44ef9ab4db201300a74f76efbf961932</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2018-02-25 14:30:21</sys_updated_on>
+<table/>
+<target_name>Fetch UpdateSet</target_name>
+<type>Scripted REST Resource</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_ui_script_58f59cbfdb001300a74f76efbf9619f3</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_ui_script"&gt;&lt;sys_ui_script action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;description/&gt;&lt;global&gt;false&lt;/global&gt;&lt;name&gt;depNow_startDeployment&lt;/name&gt;&lt;script&gt;&lt;![CDATA[var flag = true;
+var flag2 = true;
+var commitedRecordArr = [];
+var count = 0;
+function kisckOff() {
+	try{
+		updateSetRecord.sort(function(a, b) {
+			return parseInt(a.usSeq) - parseInt(b.usSeq);
+		});
+		if(count == updateSetRecord.length){
+			flag = false;
+			count--;
+		}
+		if(flag || flag2)  {
+			commiting(updateSetRecord[count].usSysID);
+			if(!flag) {
+				flag2 = false;
+			}
+		} 
+	}catch(e){
+		$('#modalAlert').show();
+		$("#modalTitle").text("Warning !!");
+		$("#modalText").text(JSON.stringify("UpdateSet not selected in run-book."));
+	}
+
+}
+
+function commiting(sysID){
+	if(!flag) {
+		$("#deploy").show();
+		$("#deploy").text("Deployed");
+		$("#deployClicked").hide();
+	} else {
+		$("#deploy").hide();
+		$("#deployClicked").show();
+	}
+	var obj = new GlideAjax('depNow_kickOff');
+	obj.addParam('sysparm_name','commitUpdateSet');
+	obj.addParam('sysparm_updateSetRecordJSON',sysID);
+	var answer = '';
+	obj.getXML(function(response){
+		answer = response.responseXML.documentElement.getAttribute("answer");
+		try{
+			var start = window.performance.now();
+			var commitedRecord = JSON.parse(answer).result;
+			commitedRecordArr.push(commitedRecord);
+			console.log("first log : "+commitedRecord.name + ' : '+commitedRecord.result );
+			if(commitedRecord.result == "commited"){
+				count++;
+				kisckOff();
+				console.log(commitedRecord.name +" : Commitited");
+				commitUS.myFunction(commitedRecordArr);
+			} else if(commitedRecord.result == "previewed"){
+				console.log(commitedRecord.name +" : Aborted");
+				commitUS.myFunction(commitedRecordArr);
+				count = 0;
+				commitedRecordArr = [];
+				$("#deploy").show();
+				$("#deploy").text("Re-StartDeployment");
+				$("#deployClicked").hide();
+			}else if(commitedRecord.result == "Already Commited,skipped"){
+				count++;
+				kisckOff();
+				console.log(commitedRecord.name +" : Skiped");
+				commitUS.myFunction(commitedRecordArr);
+			}else {
+				commitUS.myFunction(commitedRecordArr);
+				count = 0;
+				commitedRecordArr = [];
+				$("#deploy").show();
+				$("#deploy").text("Re-StartDeployment");
+				$("#deployClicked").hide();
+				console.log("Not Found");
+			}
+			var end = window.performance.now();
+			var time = end - start;
+			console.log("Deployment Time : "+time);
+			
+		}catch(e){
+			$('#modalAlert').show();
+			$("#modalTitle").text("Error !!");
+			$("#modalText").text(JSON.stringify(answer));
+			$("#deploy").show();
+			$("#deploy").text("Re-StartDeployment");
+			$("#deployClicked").hide();
+		}
+	});
+
+}]]&gt;&lt;/script&gt;&lt;script_name/&gt;&lt;sys_class_name&gt;sys_ui_script&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2018-02-09 15:38:26&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;58f59cbfdb001300a74f76efbf9619f3&lt;/sys_id&gt;&lt;sys_mod_count&gt;82&lt;/sys_mod_count&gt;&lt;sys_name&gt;depNow_startDeployment&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_ui_script_58f59cbfdb001300a74f76efbf9619f3&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-02-25 06:12:51&lt;/sys_updated_on&gt;&lt;use_scoped_format&gt;false&lt;/use_scoped_format&gt;&lt;/sys_ui_script&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="DepNowApplication_patch_v1.9.1">ccef9ab4db201300a74f76efbf961931</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-02-25 14:30:21</sys_created_on>
+<sys_id>80ef9ab4db201300a74f76efbf961932</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2018-02-25 14:30:21</sys_updated_on>
+<table/>
+<target_name>depNow_startDeployment</target_name>
+<type>UI Script</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_ui_script_7850f4b0db201300a74f76efbf9619ff</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_ui_script"&gt;&lt;sys_ui_script action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;description/&gt;&lt;global&gt;false&lt;/global&gt;&lt;name&gt;depNow_retieveUS&lt;/name&gt;&lt;script&gt;&lt;![CDATA[function retrieveCompletedRemoteSets(control) {
+
+	$("#modalTitle").text("Retrieve Complete Update Set!!");
+	$("#modalText").html('&lt;iframe id="myModal"  style="display: block;" src="/sys_update_set_source.do?sys_id='+control+'&amp;sysparm_record_target=sys_update_set_source" sandbox="allow-top-navigation allow-same-origin allow-scripts allow-popups allow-forms"  margin="auto" height="1000" width="90%"&gt;&lt;/iframe&gt;');
+	$('#modalAlert').show();
+
+}	]]&gt;&lt;/script&gt;&lt;script_name/&gt;&lt;sys_class_name&gt;sys_ui_script&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2018-02-25 06:23:53&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;true&lt;/sys_customer_update&gt;&lt;sys_id&gt;7850f4b0db201300a74f76efbf9619ff&lt;/sys_id&gt;&lt;sys_mod_count&gt;3&lt;/sys_mod_count&gt;&lt;sys_name&gt;depNow_retieveUS&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_ui_script_7850f4b0db201300a74f76efbf9619ff&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2018-02-25 07:07:49&lt;/sys_updated_on&gt;&lt;use_scoped_format&gt;false&lt;/use_scoped_format&gt;&lt;/sys_ui_script&gt;&lt;/record_update&gt;</payload>
+<remote_update_set display_value="DepNowApplication_patch_v1.9.1">ccef9ab4db201300a74f76efbf961931</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-02-25 14:30:21</sys_created_on>
+<sys_id>c0ef9ab4db201300a74f76efbf961932</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2018-02-25 14:30:21</sys_updated_on>
+<table/>
+<target_name>depNow_retieveUS</target_name>
+<type>UI Script</type>
+<update_domain>global</update_domain>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>
